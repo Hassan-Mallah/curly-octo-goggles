@@ -21,9 +21,9 @@ def upgrade() -> None:
     op.execute(
         """
         CREATE TABLE IF NOT EXISTS events (
-            id SERIAL PRIMARY KEY,
+            id VARCHAR PRIMARY KEY,
             name VARCHAR,
-            created_at TIMESTAMP,
+            created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() at time zone 'utc'),
             location VARCHAR,
             teams VARCHAR []
         )

@@ -1,13 +1,14 @@
 from fastapi import FastAPI
 import uvicorn
 from sqlalchemy import select
-from database.models import Item
 from database.base import db_session
 from sqlalchemy import text
 from views import router_health
+from views import router_events
 
 app = FastAPI()
 app.include_router(router_health, prefix="/health", tags=["Health"])
+app.include_router(router_events, prefix="/events", tags=["Events"])
 
 
 @app.get("/")
@@ -18,7 +19,8 @@ async def read_root():
         print(result.scalar())
 
         result = await session.execute(text("select * from events"))
-        print(result.scalar())
+        for row in result:
+            print(row)
 
         print('done')
 

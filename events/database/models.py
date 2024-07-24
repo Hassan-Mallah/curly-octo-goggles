@@ -1,11 +1,32 @@
-from sqlalchemy import Column, Integer, String
-from .base import Base, engine
-import asyncio
+from datetime import datetime
+
+from sqlalchemy import Column
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy import DateTime
+from sqlalchemy.dialects.postgresql import ARRAY
+from sqlalchemy import func
+from .base import Base
 
 
-class Item(Base):
-    __tablename__ = "items"
+class Event(Base):
+    __tablename__ = "events"
 
-    id = Column(Integer, primary_key=True, index=True)
-    name = Column(String, index=True)
-    description = Column(String)
+    id = Column(String, primary_key=True)
+    name = Column(String)
+    location = Column(String)
+    teams = Column(ARRAY(String))
+    created_at: datetime = Column(
+        DateTime,
+        default=datetime.utcnow,
+        server_default=func.current_timestamp(),
+    )
+
+    def to_dict(self) -> dict:
+        return {
+            'id': self.id,
+            'name': self.name,
+            'location': self.location,
+            'teams': self.teams,
+            'created_at': self.created_at,
+        }
