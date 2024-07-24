@@ -15,4 +15,11 @@ class EventDto(BaseModel):
     name: str
     location: str | None = None
     teams: list | None = None
-    created_at: datetime
+    created_at: datetime | None = None
+
+
+class EventDetailDto(BaseModel):
+    name: str | None = None
+    location: str | None = None
+    teams: list | None = None
+    created_at: datetime | None = None
