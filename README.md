@@ -1,6 +1,8 @@
 # curly-octo-goggles
 fastapi games
 
+I made an intro video here: https://youtu.be/4HO3HiT7fLQ
+
 ## Getting started
 
 Set general .env in project folder:
