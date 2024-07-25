@@ -1,5 +1,7 @@
 from fastapi import APIRouter
 from fastapi import Depends
+from fastapi import HTTPException
+from fastapi import status
 from starlette.requests import Request
 from sqlalchemy import select
 from sqlalchemy import update
@@ -22,7 +24,7 @@ async def get_event_by_id(_: Request, event_id: str, session: AsyncSession = Dep
     if event:
         return Event.to_dict(event)
     else:
-        return {'message': 'Event not found'}
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
 
 @router.get("/", name="get events", response_description="Get all events")
@@ -36,13 +38,11 @@ async def get_events(_: Request, session: AsyncSession = Depends(get_session)) -
 
 @router.post("/", name="create event", response_description="Create a new event")
 async def create_event(_: Request, data: EventDto, session: AsyncSession = Depends(get_session)) -> dict:
-    event = Event(
-        id=data.id,
-        name=data.name,
-        location=data.location,
-        teams=data.teams,
-        created_at=data.created_at
-    )
+    event = await get_row(session, Event, data.id)
+    if event:
+        return {'message': 'Event already exist', 'data': event.to_dict()}
+
+    event = Event(**data.dict(exclude_unset=True))
     session.add(event)
     await session.commit()
 
@@ -50,8 +50,7 @@ async def create_event(_: Request, data: EventDto, session: AsyncSession = Depen
 
 
 @router.put("/{event_id}", name="update event", response_description="Update a specific event by ID")
-async def update_event(_: Request, event_id: str, data: EventDetailDto,
-                       session: AsyncSession = Depends(get_session)) -> dict:
+async def update_event(_: Request, event_id: str, data: EventDetailDto, session: AsyncSession = Depends(get_session)) -> dict:
     event = await get_row(session, Event, event_id)
     if not event:
         return {'message': 'Event not found'}

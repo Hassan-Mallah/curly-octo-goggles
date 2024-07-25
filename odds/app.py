@@ -1,25 +1,14 @@
 from fastapi import FastAPI
 import uvicorn
-import asyncio
-# import psycopg2
 from sqlalchemy import select
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.ext.asyncio import async_sessionmaker
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import async_scoped_session
+from database.base import db_session
+from sqlalchemy import text
+from views import router_health
+from views import router_odds
 
 app = FastAPI()
-
-engine = create_async_engine("postgresql+asyncpg://postgres:postgres@postgres:5432/postgres")
-db_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-session_factory = async_scoped_session(db_session, scopefunc=asyncio.current_task)
-
-print(engine)
-print(db_session)
-print(session_factory)
-
+app.include_router(router_health, prefix="/health", tags=["Health"])
+app.include_router(router_odds, prefix="/events", tags=["Odds"])
 
 @app.get("/")
 async def read_root():
@@ -27,6 +16,10 @@ async def read_root():
         print(session)
         result = await session.execute(select(1))
         print(result.scalar())
+
+        result = await session.execute(text("select * from odds"))
+        for row in result:
+            print(row)
 
         print('done')
 
