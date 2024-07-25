@@ -17,8 +17,14 @@ async def get_session():
         yield session
 
 
-async def get_row(session, model, event_id):
-    result = await session.execute(select(model).where(model.id == event_id))
+async def get_row(session, model, event_id: str, update: bool = False):
+    """get row from db, in case of update lock the row"""
+
+    query = select(model).where(model.id == event_id)
+    if update:
+        query = query.with_for_update()
+
+    result = await session.execute(query)
     row = result.scalars().first()
 
     return row

@@ -53,7 +53,7 @@ async def create_event(_: Request, data: EventDto, session: AsyncSession = Depen
 @router.put("/{event_id}", name="update event", response_description="Update a specific event by ID")
 async def update_event(_: Request, event_id: str, data: EventDetailDto,
                        session: AsyncSession = Depends(get_session)) -> dict:
-    event = await get_row(session, Event, event_id)
+    event = await get_row(session, Event, event_id, update=True)
     if not event:
         return {'message': 'Event not found'}
 
