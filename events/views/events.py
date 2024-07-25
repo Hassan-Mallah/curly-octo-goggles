@@ -42,6 +42,8 @@ async def create_event(_: Request, data: EventDto, session: AsyncSession = Depen
     if event:
         return {'message': 'Event already exist', 'data': event.to_dict()}
 
+    # remove time zone from date
+    data.created_at = data.created_at.replace(tzinfo=None)
     event = Event(**data.dict(exclude_unset=True))
     session.add(event)
     await session.commit()

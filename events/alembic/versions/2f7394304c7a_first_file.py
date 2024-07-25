@@ -23,7 +23,7 @@ def upgrade() -> None:
         CREATE TABLE IF NOT EXISTS events (
             id VARCHAR PRIMARY KEY,
             name VARCHAR,
-            created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() at time zone 'utc'),
+            created_at TIMESTAMP DEFAULT (now()),
             location VARCHAR,
             teams VARCHAR []
         )
