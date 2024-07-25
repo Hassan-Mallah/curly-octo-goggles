@@ -6,6 +6,8 @@ from sqlalchemy.ext.asyncio import async_scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import select
 
+__all__ = ["Base", "get_session", "get_row", "get_rows"]
+
 engine = create_async_engine("postgresql+asyncpg://postgres:postgres@postgres/postgres")
 db_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 session_factory = async_scoped_session(db_session, scopefunc=asyncio.current_task)
@@ -18,8 +20,15 @@ async def get_session():
         yield session
 
 
-async def get_row(session, model, event_id):
-    result = await session.execute(select(model).where(model.id == event_id))
+async def get_row(session, model, id):
+    result = await session.execute(select(model).where(model.id == id))
     row = result.scalars().first()
+
+    return row
+
+
+async def get_rows(session, model, event_id):
+    result = await session.execute(select(model).where(model.event_id == event_id))
+    row = result.scalars().all()
 
     return row
