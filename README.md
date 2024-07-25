@@ -16,4 +16,4 @@ example .env file
 Deploy and create tables:
     
     docker-compose up --build -d
-    docker exec -it <events container> bash -c "alembic upgrade head"
+    docker exec -it curly-octo-goggles_events_1 bash -c "alembic upgrade head"
