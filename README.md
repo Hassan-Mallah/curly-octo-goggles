@@ -17,3 +17,6 @@ Deploy and create tables:
     
     docker-compose up --build -d
     docker exec -it curly-octo-goggles_events_1 bash -c "alembic upgrade head"
+
+- events service swagger: http://0.0.0.0:5000/docs#/
+- odds service swagger: http://0.0.0.0:5050/docs#/
