@@ -42,8 +42,7 @@ async def create_event(_: Request, data: EventDto, session: AsyncSession = Depen
     if event:
         return {'message': 'Event already exist', 'data': event.to_dict()}
 
-    # remove time zone from date
-    data.created_at = data.created_at.replace(tzinfo=None)
+    data.created_at = data.created_at.replace(tzinfo=None)  # update timezone
     event = Event(**data.dict(exclude_unset=True))
     session.add(event)
     await session.commit()
@@ -52,7 +51,8 @@ async def create_event(_: Request, data: EventDto, session: AsyncSession = Depen
 
 
 @router.put("/{event_id}", name="update event", response_description="Update a specific event by ID")
-async def update_event(_: Request, event_id: str, data: EventDetailDto, session: AsyncSession = Depends(get_session)) -> dict:
+async def update_event(_: Request, event_id: str, data: EventDetailDto,
+                       session: AsyncSession = Depends(get_session)) -> dict:
     event = await get_row(session, Event, event_id)
     if not event:
         return {'message': 'Event not found'}
@@ -65,7 +65,7 @@ async def update_event(_: Request, event_id: str, data: EventDetailDto, session:
 
 @router.delete("/{event_id}", name="delete event", response_description="Delete a specific event by ID")
 async def delete_event(_: Request, event_id: str, session: AsyncSession = Depends(get_session)) -> dict:
-    event : Event = await get_row(session, Event, event_id)
+    event: Event = await get_row(session, Event, event_id)
     if not event:
         return {'message': 'Event not found'}
 
