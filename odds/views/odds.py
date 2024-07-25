@@ -4,7 +4,6 @@ from fastapi import Depends
 from starlette.requests import Request
 from fastapi import HTTPException
 from fastapi import status
-from sqlalchemy import select
 from sqlalchemy import update
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -15,6 +14,7 @@ from database.models import OddsTypesEnum
 from database.base import get_session
 from database.base import get_row
 from database.base import get_rows
+from settings import settings
 
 __all__ = ["router"]
 
@@ -32,7 +32,7 @@ async def get_event_by_id(_: Request, event_id: str, session: AsyncSession = Dep
 @router.post("/{event_id}/odds", name="create event", response_description="Create a new event")
 async def create_event(_: Request, event_id: str, data: OddsDto, session: AsyncSession = Depends(get_session)) -> dict:
     async with httpx.AsyncClient(timeout=5000) as client:
-        response = await client.get(url=f"http://:5000/events/{event_id}")
+        response = await client.get(url=f"{settings.EVENTS_URL}/events/{event_id}")
         if response.status_code != 200:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Event not found")
 
@@ -53,13 +53,13 @@ async def create_event(_: Request, event_id: str, data: OddsDto, session: AsyncS
 @router.put("/{event_id}/odds/{odds_id}", name="update odds", response_description="Update a specific odds by ID")
 async def update_event(_: Request, event_id: str, odds_id: str, data: OddsDetailDto,
                        session: AsyncSession = Depends(get_session)) -> dict:
-    row: Odds = await get_row(session, Odds, odds_id)
+    row: Odds = await get_row(session, Odds, odds_id, update=True)
 
     # check odds id and event id are correct
     if not row or row.event_id != event_id:
         return {'message': 'Odds not found with this info'}
 
-    if data.type not in OddsTypesEnum.types():
+    if data.type and data.type not in OddsTypesEnum.types():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Type not found: {data.type}")
 
     stmt = update(Odds).where(Odds.id == odds_id).values(**data.dict(exclude_unset=True))

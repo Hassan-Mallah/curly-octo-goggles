@@ -23,7 +23,7 @@ def upgrade() -> None:
         """
         CREATE TABLE IF NOT EXISTS odds (
             id VARCHAR PRIMARY KEY,
-            event_id VARCHAR REFERENCES events,
+            event_id VARCHAR REFERENCES events ON DELETE CASCADE,
             type type_choices,
             value INTEGER,
             created_at TIMESTAMP WITHOUT TIME ZONE DEFAULT (now() at time zone 'utc')

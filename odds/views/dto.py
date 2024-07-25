@@ -11,5 +11,5 @@ class OddsDto(BaseModel):
 
 
 class OddsDetailDto(BaseModel):
-    type: str
-    value: int
+    type: str | None = None
+    value: int | None = None

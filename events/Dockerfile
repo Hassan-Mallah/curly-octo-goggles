@@ -7,4 +7,5 @@ RUN pip install -r requirements.txt
 
 COPY . /events/
 
+CMD ["alembic", "upgrade head"]
 CMD ["python", "app.py"]
