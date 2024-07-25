@@ -4,7 +4,6 @@ from views import router_health
 from views import router_events
 from settings import settings
 
-
 app = FastAPI()
 app.include_router(router_health, prefix="/health", tags=["Health"])
 app.include_router(router_events, prefix="/events", tags=["Events"])

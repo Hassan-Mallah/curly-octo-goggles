@@ -1,8 +1,6 @@
-import asyncio
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.ext.asyncio import async_sessionmaker
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import async_scoped_session
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import select
 from settings import settings
@@ -11,8 +9,6 @@ __all__ = ["Base", "get_session", "get_row"]
 
 engine = create_async_engine(settings.DB_URL)
 db_session = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
-session_factory = async_scoped_session(db_session, scopefunc=asyncio.current_task)
-
 Base = declarative_base()
 
 

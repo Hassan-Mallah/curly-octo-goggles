@@ -22,7 +22,7 @@ router = APIRouter()
 
 
 @router.get("/{event_id}/odds", name="get odds", response_description="Get odds for event by id")
-async def get_event_by_id(_: Request, event_id: str, session: AsyncSession = Depends(get_session)) -> list:
+async def get_odds_by_event_id(_: Request, event_id: str, session: AsyncSession = Depends(get_session)) -> list:
     odds = await get_rows(session, Odds, event_id)
     if odds:
         return [Odds.to_dict(row) for row in odds]
@@ -30,7 +30,9 @@ async def get_event_by_id(_: Request, event_id: str, session: AsyncSession = Dep
 
 
 @router.post("/{event_id}/odds", name="create event", response_description="Create a new event")
-async def create_event(_: Request, event_id: str, data: OddsDto, session: AsyncSession = Depends(get_session)) -> dict:
+async def create_odds(_: Request, event_id: str, data: OddsDto, session: AsyncSession = Depends(get_session)) -> dict:
+    """check event id, type, before adding new odds"""
+
     async with httpx.AsyncClient(timeout=5000) as client:
         response = await client.get(url=f"{settings.EVENTS_URL}/events/{event_id}")
         if response.status_code != 200:
@@ -51,7 +53,7 @@ async def create_event(_: Request, event_id: str, data: OddsDto, session: AsyncS
 
 
 @router.put("/{event_id}/odds/{odds_id}", name="update odds", response_description="Update a specific odds by ID")
-async def update_event(_: Request, event_id: str, odds_id: str, data: OddsDetailDto,
+async def update_odds(_: Request, event_id: str, odds_id: str, data: OddsDetailDto,
                        session: AsyncSession = Depends(get_session)) -> dict:
     row: Odds = await get_row(session, Odds, odds_id, update=True)
 
@@ -69,7 +71,7 @@ async def update_event(_: Request, event_id: str, odds_id: str, data: OddsDetail
 
 
 @router.delete("/{event_id}/odds/{odds_id}", name="delete oods", response_description="Delete a specific odds by ID")
-async def delete_event(_: Request, event_id: str, odds_id: str, session: AsyncSession = Depends(get_session)) -> dict:
+async def delete_odds(_: Request, event_id: str, odds_id: str, session: AsyncSession = Depends(get_session)) -> dict:
     row: Odds = await get_row(session, Odds, odds_id)
 
     # check odds id and event id are correct
