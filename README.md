@@ -14,6 +14,8 @@ example .env file
     EVENTS_PORT=5000
     EVENTS_URL=http://events:5000
     ODDS_PORT=5050
+    DB_URL=postgresql+asyncpg://postgres:postgres@postgres/postgres
+
 
 Deploy and create tables:
     
