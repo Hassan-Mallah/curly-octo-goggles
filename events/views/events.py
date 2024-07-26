@@ -57,6 +57,9 @@ async def update_event(_: Request, event_id: str, data: EventDetailDto,
     if not event:
         return {'message': 'Event not found'}
 
+    if data.dict().get('created_at'):
+        data.created_at = data.created_at.replace(tzinfo=None)  # update timezone
+
     stmt = update(Event).where(Event.id == event_id).values(**data.dict(exclude_unset=True))
     await session.execute(stmt)
     await session.commit()
